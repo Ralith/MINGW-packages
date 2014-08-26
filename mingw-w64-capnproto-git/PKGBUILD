@@ -1,0 +1,31 @@
+_realname=capnproto-git
+pkgname="${MINGW_PACKAGE_PREFIX}-${_realname}"
+pkgver=589.4eac85e
+pkgrel=1
+pkgdesc="Cap'n Proto serialization/RPC system"
+arch=('any')
+url='http://kentonv.github.io/capnproto/index.html'
+license=('MIT')
+makedepends=('svn' 'autoconf' 'automake' 'libtool' 'patch')
+conflicts=('capnproto')
+provides=('capnproto')
+source=("git+https://github.com/jmckaskill/capnproto.git#branch=mingw")
+md5sums=('SKIP')
+
+pkgver() {
+  cd "${srcdir}/capnproto"
+  echo $(git rev-list --count HEAD).$(git rev-parse --short HEAD)
+}
+
+build() {
+  cd "${srcdir}/capnproto/c++"
+  ./setup-autotools.sh
+  autoreconf -i
+  ./configure --prefix="$MINGW_PREFIX"
+  make
+}
+
+package() {
+  cd "${srcdir}/capnproto/c++"
+  make DESTDIR="${pkgdir}" install
+}
